@@ -109,9 +109,14 @@ def build_model():
     ])
 
     #Define the sets of pipeline parameters that will be tested in grid search
+
+    #####
+    #NOTE: The parameter sets are all commented out so the reviewer will be able
+    #to run the code in a shorter amount of time
+    #####
     parameters = {#'count__max_df': [0.75, 1.0],
               #'count__ngram_range': [(1,1),(1,2)],
-              #'count__max_features' : [100,200],
+              #'count__max_features' : [None, 100,200],
               #'tfidf__smooth_idf':[True, False],
               #'clf__estimator__max_depth': [None,4,8],
               #'clf__estimator__min_samples_split': [2, 10, 50],
@@ -138,7 +143,7 @@ def build_model():
     #Define the grid search object that will be used to find and train the best
     #performing pipeline
     cv = GridSearchCV(pipeline, param_grid = parameters, scoring = total_scorer,
-                      verbose = 3, n_jobs = 6)
+                      verbose = 3)
 
     return cv
 
@@ -163,7 +168,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     None
     """
 
-    #Caculate the model predictions on the test set for all response variables 
+    #Caculate the model predictions on the test set for all response variables
     Y_pred = pd.DataFrame(model.predict(X_test), columns = category_names)
 
     for col in category_names:

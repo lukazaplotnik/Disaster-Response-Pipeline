@@ -38,15 +38,20 @@ model = joblib.load("../models/classifier.pkl")
 @app.route('/')
 @app.route('/index')
 def index():
-    #Original visuals
+    """ Create index webpage that displays visuals and receives user input text
+    for classification
+    """
+
+    #Extract data for original visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
-    
-    #Extracted data for custom visuals - relative number of positives per category
-    categories_positives = (df.iloc[:,4:].sum()/df.shape[0]).sort_values(ascending = False).round(4)
-    categories_names = list(categories_positives.index)
-   
-    #Extracted data for custom visuals - histogram of message lengths (without outliers)
+
+    #Extract data for custom visuals - relative number of positives in each cat
+    cat_positives = df.iloc[:,4:].sum()/df.shape[0]
+    cat_positives_sorted = cat_positives.sort_values(ascending = False).round(4)
+    cat_names = list(cat_positives_sorted.index)
+
+    #Extract data for custom visuals, histogram of message lengths (w/o outliers)
     lengths = df['message'].apply(lambda x: len(x))
     q1 = lengths.quantile(0.25)
     q3 = lengths.quantile(0.75)
@@ -55,7 +60,7 @@ def index():
     upper_bound = q3 + 1.5*IQR
 
     lengths_plot = lengths[(lengths>lower_bound)&(lengths<upper_bound)]
-    
+
     # create visuals
     graphs = [
         #Distribution of genres
@@ -77,7 +82,7 @@ def index():
                 }
             }
         },
-        
+
         #Distribution of lengths
         {
             'data': [
@@ -96,13 +101,13 @@ def index():
                 }
             }
         },
-        
+
         #Relative number of positives per category
         {
             'data': [
                 Bar(
-                    x=categories_names,
-                    y=categories_positives,
+                    x=cat_names,
+                    y=cat_positives_sorted,
                     orientation = "v"
                 )
             ],
@@ -116,16 +121,16 @@ def index():
                     'title': "Category"
                 },
                 'margin':{
-                    'b': 140   
-                }             
+                    'b': 140
+                }
             }
         }
     ]
-    
+
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
-    
+
     # render web page with plotly graphs
     return render_template('master.html', ids=ids, graphJSON=graphJSON)
 
@@ -133,14 +138,16 @@ def index():
 # web page that handles user query and displays model results
 @app.route('/go')
 def go():
+    """ Create webpage that handles user query and displays model results
+    """
     # save user input in query
-    query = request.args.get('query', '') 
+    query = request.args.get('query', '')
 
     # use model to predict classification for query
     classification_labels = model.predict([query])[0]
     classification_results = dict(zip(df.columns[4:], classification_labels))
 
-    # This will render the go.html Please see that file. 
+    # This will render the go.html Please see that file.
     return render_template(
         'go.html',
         query=query,
