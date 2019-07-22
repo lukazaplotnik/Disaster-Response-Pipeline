@@ -8,8 +8,10 @@ By using real disaster text messages that were sent during disaster events we tr
 ### File Descriptions:
 
 data/disaster_messages.csv: input file with disaster response messages
+
 data/disaster_categories.csv: input file with the categorization of the input
 disaster response messages
+
 data/process_data.py : implements a data cleaning pipeline that:
 - loads the messages and categories datasets
 - merges the two datasets
@@ -27,7 +29,9 @@ a multi-output classifier (one RandomForestClassifier per output category)
 
 app/templates/master.html: displays visuals and receives user input text
 for classification
+
 app/templates/go.html: handles user query and displays model results
+
 app/run.py: implements functions that run a Flask web app
 
 ### Instructions:
