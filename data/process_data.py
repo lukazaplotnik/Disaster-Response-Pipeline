@@ -39,7 +39,7 @@ def clean_data(df):
     #Split the categories column into separate columns
     categories = df['categories'].str.split(";", expand=True)
 
-    #Extract a list of new column names for categories dataset from the first row
+    #Extract a list of new column names for categories dataset
     row = categories.iloc[0]
     category_colnames = row.apply(lambda x: x[:-2])
     categories.columns = category_colnames
@@ -53,7 +53,8 @@ def clean_data(df):
     categories[categories>1] = 1
 
     #Remove columns that have all 0 values
-    categories = categories.drop(categories.columns[categories.sum() == 0], axis=1)
+    categories = categories.drop(categories.columns[categories.sum() == 0],
+                                 axis=1)
 
     #Drop the original categories column from the uncleaned dataframe
     df = df.drop('categories', axis=1)
@@ -63,20 +64,22 @@ def clean_data(df):
 
     #Drop duplicate rows based on the ID column.
 
-    #Note: There are some instances of duplicate IDs that do not contain the same
-    #content in the 'categories' column. Ideally, one would manually select which
-    #row to keep and which to delete based on the content in a given message.
-    #However, the aim is to develop an automated ETL approach, therefore we rely
-    #on a simpler approach and directly use the drop_duplicates method, keeping
-    #only the first instance of each duplicate ID. The simplification does not
-    #lead to significant loss of information, as the number of problematic rows is low.
+    #Note:There are some instances of duplicate IDs that do not contain the same
+    #content in the 'categories' column. Ideally, one would manually select
+    #which row to keep and which to delete based on the content in a given
+    #message. However, the aim is to develop an automated ETL approach,
+    #therefore we rely on a simpler approach and directly use the
+    #drop_duplicates method, keeping only the first instance of each duplicate
+    #ID. The simplification does not lead to significant loss of information,
+    #as the number of problematic rows is low.
     df = df.drop_duplicates('id')
 
     return df
 
 
 def save_data(df, database_filename):
-    """ Store the clean dataframe into a SQLite database in the specified database file path
+    """ Store the clean dataframe into a SQLite database in the specified
+    database file path
 
     Parameters
     ----------

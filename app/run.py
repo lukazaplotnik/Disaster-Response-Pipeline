@@ -1,13 +1,14 @@
 import json
 import plotly
 import pandas as pd
+import seaborn as sns
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
 from flask import Flask
 from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar
+from plotly.graph_objs import Bar, Histogram
 from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
@@ -26,26 +27,38 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
+df = pd.read_sql_table('messages', engine)
 
 # load model
-model = joblib.load("../models/your_model_name.pkl")
+model = joblib.load("../models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
 @app.route('/')
 @app.route('/index')
 def index():
-    
-    # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
+    #Original visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
     
+    #Extracted data for custom visuals - relative number of positives per category
+    categories_positives = (df.iloc[:,4:].sum()/df.shape[0]).sort_values(ascending = False).round(4)
+    categories_names = list(categories_positives.index)
+   
+    #Extracted data for custom visuals - histogram of message lengths (without outliers)
+    lengths = df['message'].apply(lambda x: len(x))
+    q1 = lengths.quantile(0.25)
+    q3 = lengths.quantile(0.75)
+    IQR = q3 - q1
+    lower_bound = q1 - 1.5*IQR
+    upper_bound = q3 + 1.5*IQR
+
+    lengths_plot = lengths[(lengths>lower_bound)&(lengths<upper_bound)]
+    
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
+        #Distribution of genres
         {
             'data': [
                 Bar(
@@ -62,6 +75,49 @@ def index():
                 'xaxis': {
                     'title': "Genre"
                 }
+            }
+        },
+        
+        #Distribution of lengths
+        {
+            'data': [
+                Histogram(
+                    x=lengths_plot
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Message Lengths',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Length"
+                }
+            }
+        },
+        
+        #Relative number of positives per category
+        {
+            'data': [
+                Bar(
+                    x=categories_names,
+                    y=categories_positives,
+                    orientation = "v"
+                )
+            ],
+
+            'layout': {
+                'title': 'Relative Number of Positives in Each Category',
+                'yaxis': {
+                    'title': "Relative Number"
+                },
+                'xaxis': {
+                    'title': "Category"
+                },
+                'margin':{
+                    'b': 140   
+                }             
             }
         }
     ]
