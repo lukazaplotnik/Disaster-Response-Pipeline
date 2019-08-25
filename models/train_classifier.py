@@ -110,17 +110,13 @@ def build_model():
 
     #Define the sets of pipeline parameters that will be tested in grid search
 
-    #####
-    #NOTE: The parameter sets are all commented out so the reviewer will be able
-    #to run the code in a shorter amount of time
-    #####
-    parameters = {#'count__max_df': [0.75, 1.0],
-              #'count__ngram_range': [(1,1),(1,2)],
-              #'count__max_features' : [None, 100,200],
-              #'tfidf__smooth_idf':[True, False],
-              #'clf__estimator__max_depth': [None,4,8],
-              #'clf__estimator__min_samples_split': [2, 10, 50],
-              #'clf__estimator__n_estimators': [10, 50]
+    parameters = {'count__max_df': [0.75, 1.0],
+              'count__ngram_range': [(1,1),(1,2)],
+              'count__max_features' : [None, 100,200],
+              'tfidf__smooth_idf':[True, False],
+              'clf__estimator__max_depth': [None,4,8],
+              'clf__estimator__min_samples_split': [2, 10, 50],
+              'clf__estimator__n_estimators': [10, 50]
              }
 
     #Define the scorer that will measure the performance of different parameter
