@@ -1,38 +1,40 @@
 # Disaster Response Pipeline Project
 
 ### Project Summary:
-In this project, we analyze disaster data from Figure Eight to build a model for an API that classifies disaster messages.
+In this project, we analyzed disaster data from Figure Eight to build a model for an API that classifies disaster messages.
 
-By using real disaster text messages that were sent during disaster events we train a machine learning pipeline that is able to categorize disaster events from a given text, and can ultimately be used to notify appropriate disaster relief agencies. For this purpose, also a Flask web app has been implemented that would allow an emergency worker to input a new message and obtain classification results for several disaster event categories.
+By using the provided set of labelled disaster text messages, which were collected during actual disaster events, we trained a machine learning pipeline that is able to categorize emergency messages based on the needs communicated by the sender (e.g. shelter, medical aid, etc.), and could ultimately be used to automatically notify appropriate disaster relief agencies.
+
+We implemented a simple Flask web application that would allow an emergency worker to input a new text message and obtain classification results for several disaster event categories.
 
 ### File Descriptions:
 
-data/disaster_messages.csv: input file with disaster response messages
+- data/disaster_messages.csv: input file with disaster response messages
 
-data/disaster_categories.csv: input file with the categorization of the input
+- data/disaster_categories.csv: input file with the categorization of the input
 disaster response messages
 
-data/process_data.py : implements a data cleaning pipeline that:
-- loads the messages and categories datasets
-- merges the two datasets
-- cleans the data
-- stores it in a SQLite database
+- data/process_data.py : implements a data cleaning pipeline that:
+  - loads the messages and categories datasets
+  - merges the two datasets
+  - cleans the data
+  - stores it in a SQLite database
 
-models/train_classifier.py: implements a machine learning pipeline that:
-- loads data from the SQLite database
-- splits the dataset into training and test sets
-- builds a pipeline that combines text transformation (tf-idf approach) and
-a multi-output classifier (one RandomForestClassifier per output category)
-- trains and tunes a pipeline using GridSearchCV
-- outputs results on the test set
-- exports the final model as a pickle file
+- models/train_classifier.py: implements a machine learning pipeline that:
+  - loads data from the SQLite database
+  - splits the dataset into training and test sets
+  - builds a pipeline that combines text transformation (tf-idf approach) and
+  a multi-output classifier (one RandomForestClassifier per output category)
+  - trains and tunes a pipeline using GridSearchCV
+  - outputs results on the test set
+  - exports the final model as a pickle file
 
-app/templates/master.html: displays visuals and receives user input text
+- app/templates/master.html: displays visuals and receives user input text
 for classification
 
-app/templates/go.html: handles user query and displays model results
+- app/templates/go.html: handles user query and displays model results
 
-app/run.py: implements functions that run a Flask web app
+- app/run.py: implements functions that run a Flask web app
 
 ### Instructions:
 1. Run the following commands in the project's root directory to set up your database and model.
